@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Image as ImageIcon, Star, StarOff } from 'lucide-react';
+import { Upload, Image as ImageIcon, Star, StarOff, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface CharacterImage {
@@ -26,6 +26,7 @@ export function CharacterUpload({ onUploadSuccess, onDefaultChange }: CharacterU
   const [characters, setCharacters] = useState<CharacterImage[]>([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
 
   // Fetch existing characters
   const fetchCharacters = useCallback(async () => {
@@ -95,6 +96,29 @@ export function CharacterUpload({ onUploadSuccess, onDefaultChange }: CharacterU
     }
   };
 
+  const manualSync = async () => {
+    setSyncing(true);
+    try {
+      const response = await fetch('/api/characters/sync', {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCharacters(data.characters || []);
+        toast.success(data.message || 'Characters synced successfully');
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || 'Sync failed');
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      toast.error('Failed to sync characters');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setUploading(true);
     
@@ -155,13 +179,27 @@ export function CharacterUpload({ onUploadSuccess, onDefaultChange }: CharacterU
       {/* Upload Area */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="w-5 h-5" />
-            Upload Character Images
-          </CardTitle>
-          <CardDescription>
-            Drag and drop WebP images here, or click to select files. Maximum file size: 10MB.
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="w-5 h-5" />
+                Upload Character Images
+              </CardTitle>
+              <CardDescription>
+                Drag and drop WebP images here, or click to select files. Maximum file size: 10MB.
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={manualSync}
+              disabled={syncing || uploading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Syncing...' : 'Sync'}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div
