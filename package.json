@@ -8,7 +8,8 @@
     "start": "npx serve@latest out",
     "export": "next build",
     "db:studio": "prisma studio",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "sync-characters": "node scripts/sync-characters.js"
   },
   "dependencies": {
     "@hookform/resolvers": "3.9.1",

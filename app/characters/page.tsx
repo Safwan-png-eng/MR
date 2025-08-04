@@ -1,9 +1,14 @@
 import { CharacterUpload } from '@/components/character-upload';
-import { runStartupTasks } from '@/lib/startup';
+import { syncCharacterImages } from '@/lib/character-images';
 
 export default async function CharactersPage() {
-  // Run startup tasks to ensure character system is initialized
-  await runStartupTasks();
+  // Sync character images when page loads
+  try {
+    await syncCharacterImages();
+    console.log('✅ Character images synced on page load');
+  } catch (error) {
+    console.error('❌ Failed to sync character images:', error);
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">

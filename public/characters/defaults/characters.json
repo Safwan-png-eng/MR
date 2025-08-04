@@ -1,0 +1,13 @@
+{
+  "characters": {
+    "black-panther-portrait": {
+      "id": "black-panther-portrait",
+      "name": "Black Panther Portrait",
+      "filename": "black-panther-portrait.webp",
+      "path": "/characters/images/black-panther-portrait.webp",
+      "isDefault": true,
+      "uploadedAt": "2025-08-04T11:44:12.119Z"
+    }
+  },
+  "defaultCharacter": "black-panther-portrait"
+}
